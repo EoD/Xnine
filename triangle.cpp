@@ -47,42 +47,50 @@ static void triangle(struct IDirect3D9 *d3d9, struct Xnine_private *priv)
     D3DPRESENT_PARAMETERS d3dpp;
     IDirect3DDevice9 *device = NULL;
     IDirect3DVertexBuffer9 *vertex_buf = NULL;
-    int width = WIDTH;
-    int height = HEIGHT;
+    const int width = WIDTH;
+    const int height = HEIGHT;
     HWND hwnd;
     void* pVoid;
 
+    /* Create and initialize */
     memset(&d3dpp, 0, sizeof(D3DPRESENT_PARAMETERS));
     d3dpp.Windowed = TRUE;
     d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
     d3dpp.BackBufferFormat = D3DFMT_X8R8G8B8;
     d3dpp.BackBufferWidth = width;
     d3dpp.BackBufferHeight = height;
-    (void)Xnine_create_window(priv, width, height, FALSE, &hwnd);
+    (void)Xnine_create_window(priv, width, height, !d3dpp.Windowed, &hwnd);
     d3dpp.hDeviceWindow = hwnd;
     d3d9->CreateDevice(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, hwnd,
                        D3DCREATE_HARDWARE_VERTEXPROCESSING,
                        &d3dpp, &device);
 
+    /* Create Vertex Buffer and add vertices */
     device->CreateVertexBuffer(3*sizeof(struct CUSTOMVERTEX),
                                0, D3DFVF_XYZ | D3DFVF_DIFFUSE,
                                D3DPOOL_MANAGED,
                                &vertex_buf, NULL);
 
+    /* Lock Vertex Buffer and copy vertices to pVoid */
     vertex_buf->Lock(0, 0, &pVoid, 0);
     memcpy(pVoid, triangle_vertices, sizeof(triangle_vertices));
     vertex_buf->Unlock();
 
+    /* Render a frame */
     device->Clear(0, NULL, D3DCLEAR_TARGET, D3DCOLOR_XRGB(0, 0, 255), 1.0f,  0);
     device->BeginScene();
+
     device->SetRenderState(D3DRS_LIGHTING, FALSE);
     device->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
     device->SetStreamSource(0, vertex_buf, 0, sizeof(struct CUSTOMVERTEX));
     device->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
+
     device->EndScene();
     device->Present(NULL, NULL, NULL, NULL);
 
-    sleep(10);
+    sleep(5);
+
+    /* Close Direct3D */
     device->Release();
     Xnine_destroy_window(priv, hwnd);
 }
