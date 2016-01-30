@@ -1,0 +1,4 @@
+*.o
+triangle_c
+triangle_cpp
+triangle_SDL
