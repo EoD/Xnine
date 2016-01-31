@@ -83,6 +83,7 @@ static void triangle(struct IDirect3D9 *d3d9, struct Xnine_private *priv)
     IDirect3DDevice9_Present(device, NULL, NULL, NULL, NULL);
 
     sleep(10);
+    IDirect3DVertexBuffer9_Release(vertex_buf);
     IDirect3DDevice9_Release(device);
     Xnine_destroy_window(priv, hwnd);
 }

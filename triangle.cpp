@@ -91,6 +91,7 @@ static void triangle(struct IDirect3D9 *d3d9, struct Xnine_private *priv)
     sleep(5);
 
     /* Close Direct3D */
+    vertex_buf->Release();
     device->Release();
     Xnine_destroy_window(priv, hwnd);
 }
